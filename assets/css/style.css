@@ -1,0 +1,81 @@
+* {
+	box-sizing: border-box;
+	
+}
+header {
+	height: 20%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+}
+
+.header-container {
+	font-size: 36px;
+	color: white;
+	font-weight: bold;
+
+}
+body {
+	background-color:#0988d9; 
+	height:100vh ;
+}
+
+.container {
+	height: 100%;
+}
+
+.row { 
+	height: 100%;
+	margin: 0;
+	padding: 0%;
+	align-content: space-between;
+}
+.row.five-day-container {
+	align-content: center;
+	justify-content: space-around;
+	border: 2px solid black;
+}
+
+.current {
+	height: 50%;
+	border: 2px dashed black;
+	display: flex;
+	align-items: center;
+	justify-content: center;	
+	flex-direction: column;
+}
+
+.weather-icon {
+	border: 2px dashed black;
+	height: 60%;
+	width: 50%;
+	margin-bottom: 10px;
+
+}
+
+.weather-info {
+	border: 2px dashed black;
+	height: 30%;
+	width: 90%;
+}
+
+.five-day {
+	height: 50%;
+	/*justify-content: center;
+	align-items: center;
+	/*display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0;*/
+}
+
+.col-md-6.five-day-box {
+	flex: 0 1 auto;
+	height: auto;
+	border: 2px dashed black
+}
+/*.five-day > div {
+	border: 2px dashed black;
+	height: 60%;
+}*/

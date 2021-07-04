@@ -25,8 +25,7 @@ function getWeatherIcon(iconCode) {
 	console.log("icon", iconCode)
 }
 
-var data = getApiResponse(33.44,-94.04);
+var data = getApiResponse(33.73344160157088, -118.28435190627356);
 data.then(function(data){
 	getWeatherIcon(data.current.weather[0].icon);
 });
-//console.log(icon);
