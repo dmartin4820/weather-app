@@ -1,12 +1,23 @@
+:root{
+	--blue:#1181ee;
+	--lightBlue:#b0d5fa; 
+}
 * {
 	box-sizing: border-box;
 	
+}
+
+ul {
+	list-style-type: none;
+	padding: 0;
 }
 header {
 	height: 20%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	background-color: var(--blue);
+	margin-bottom: 25px;
 
 }
 
@@ -18,7 +29,7 @@ header {
 
 }
 body {
-	background-color:#0988d9; 
+	background-color: var(--lightBlue);
 	height:100vh ;
 }
 
@@ -27,16 +38,53 @@ body {
 }
 
 .search {
-	border: 2px dashed black;
-	height: 10%;
-	flex: 1 2 10%;
-
+	border: 2px solid black;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	/*background-color: #1181ee;*/
 }
+
+.search-container > input {
+	border-radius: 5px;
+	margin: 10px 0;
+}
+
+.search-history {
+	height: 90%;
+	width: 90%;
+	background-color: var(--lightBlue);
+	padding: 0;
+}
+
+.search-history li {
+	border: 1px solid black;
+	border-radius: 10px;
+	background-color: white;
+	color: black;
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	margin: 1px 0;
+}
+
+.search-history li:hover {
+	box-shadow: 2px 4px black;
+}
+.search-btn {
+	border-radius: 5px;
+	color: black;
+	background-color:white;
+}
+
+
 .row { 
 	height: 100%;
 	margin: 0;
 	padding: 0%;
-	align-content: space-between;
+	/*align-content: space-between;*/
+	justify-content: flex-start;
 }
 .row.five-day-container {
 	align-content: center;
@@ -45,44 +93,60 @@ body {
 }
 
 .current {
-	height: 60%;
-	border: 2px dashed black;
+	height: 40%;
 	display: flex;
 	align-items: center;
-	justify-content: center;	
-	flex-direction: column;
+	justify-content: center;
+	flex-direction: column;	
+}
+
+.current-weather-container {
+	height: 70%;
+	width: 70%;
+	border: 2px solid black;
 }
 
 .weather-icon {
-	border: 2px dashed black;
-	height: 60%;
+	height: 30%;
 	width: 50%;
 	margin-bottom: 10px;
+}
 
+.weather-icon > * {
+	display: inline;
 }
 
 .weather-info {
-	border: 2px dashed black;
-	height: 30%;
-	width: 90%;
+	margin-top: 10px;
+	height: 50%;
+	width: 50%;
+	font-weight: bold;
 }
 
 .weather-container {
 	height: 90%;
 }
 
+.hide {
+	display: none;
+}
+
 .five-day {
 	height: 35%;
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: flex-start;
 	margin: 0;
 }
 
 .col-md-6.five-day-box {
 	flex: 0 1 auto;
 	height: auto;
-	border: 2px dashed black
+}
+
+.five-day-box > p {
+	font-weight: bold;
+	font-size: 20px;
 }
 /*.five-day > div {
 	border: 2px dashed black;
