@@ -65,7 +65,7 @@ async function getApiResponse(latitude, longitude) {
 		})
 
 		.then(function(responseData) {
-			//console.log("data", responseData);
+			console.log("data", responseData);
 			return responseData;
 		});
 
@@ -172,9 +172,9 @@ function displayResults(weatherData, cityName) {
 			   fiveDay: []};
 
 
-	for (var i = 0; i < weatherData.daily.length - 3; i++) {
+	for (var i = 1; i < weatherData.daily.length - 2; i++) {
 		var singleDayWeather = [{name: "Temperature", data: [weatherData.daily[i].temp.min, weatherData.daily[i].temp.max], units: "&degF"},
-				     {name: "Humidity", data: weatherData.daily[i].himidity, units: "%"},
+				     {name: "Humidity", data: weatherData.daily[i].humidity, units: "%"},
 				     {name: "Wind speed", data: weatherData.daily[i].wind_speed, units: "mi/h"},
 				     {name: "UV Index", data: weatherData.daily[i].uvi, units: ""},
 				     {name: "Time", data: weatherData.daily[i].dt, units: "seconds"},
@@ -261,9 +261,9 @@ function getDate(weatherDataUnix, weatherData, shortDate=true) {
 	//console.log(weatherData)
 	var searchTimezoneOffset = weatherData.timezone_offset;
 
-	var searchCurrentTime = moment.unix(weatherDataUnix - localOffsetToUTC + searchTimezoneOffset).utc();
+	var searchCurrentTime = moment.unix(weatherDataUnix + searchTimezoneOffset).utc();
 	if (!shortDate) {
-		var date = searchCurrentTime.format("dddd, MM[/]DD[/]YYYY");
+		var date = searchCurrentTime.format("dddd, MM[/]DD[/]YYYY, h:mm a");
 	} else {
 		var date = searchCurrentTime.format("MM[/]DD[/]YYYY");
 	}
