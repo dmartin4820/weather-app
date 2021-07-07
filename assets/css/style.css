@@ -70,6 +70,7 @@ body {
 
 .search-history li:hover {
 	box-shadow: 2px 4px black;
+	cursor: pointer;
 }
 .search-btn {
 	border-radius: 5px;

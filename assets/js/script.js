@@ -23,7 +23,7 @@ async function getApiResponse(latitude, longitude) {
 		})
 
 		.then(function(responseData) {
-			console.log("data", responseData);
+			//console.log("data", responseData);
 			return responseData;
 		});
 
@@ -38,7 +38,7 @@ async function getLatLong(cityName) {
 			return response.json();
 		}) 
 		.then(function(responseData) {
-			console.log("data", responseData);
+			//console.log("data", responseData);
 			return responseData.city.coord;
 		});
 
@@ -48,23 +48,29 @@ async function getLatLong(cityName) {
 
 
 function searchForCity() {
+	var searchBtn = document.getElementById("search-btn")
+	searchBtn.addEventListener('click', getResults);
+
+}
+
+function getResults(city) {
 	var searchInput = document.getElementById("search-input");
-	var searchBtn = document.getElementById("search-btn");
-
-	searchBtn.addEventListener('click', function() {
-		var cityName = searchInput.value.toLowerCase();
-		searchInput.value = "";
-		cityName = capitalizeWords(cityName);
-		var data = getLatLong(cityName)
-			.then(response => getApiResponse(response.lat, response.lon))
-			.then(function(response) {
-				if (response.cod !== "404") {
-					saveSearch(cityName);
-					displayResults(response, cityName);
-				}
-			})
-	});
-
+	console.log(city.target)	
+	var cityName = searchInput.value.toLowerCase();
+	searchInput.value = "";
+	
+	if (city.target.getAttribute("id") !== "search-btn") {
+		cityName = city.target.getAttribute("id");
+	}
+	cityName = capitalizeWords(cityName);
+	var data = getLatLong(cityName)
+		.then(response => getApiResponse(response.lat, response.lon))
+		.then(function(response) {
+			if (response.cod !== "404") {
+				saveSearch(cityName);
+				displayResults(response, cityName);
+			}
+		})
 }
 
 function capitalizeWords(cityName) {
@@ -77,13 +83,14 @@ function capitalizeWords(cityName) {
 		tempCityNameArr[i] = tempCityNameArr[i][0].toUpperCase() + tempCityNameArr[i].slice(1);
 	}
 
-	return tempCityNameArr.join(" ");
+	return tempCityNameArr.join(" ") + ", US" ;
 }
 
 
 function saveSearch(cityName) {
 	var searchHistory = document.getElementById('search-history');
 	var searchListEl = document.createElement('li');
+	searchListEl.setAttribute("id", cityName);
 
 	
 	if (!cityNameSet.has(cityName)) {
@@ -91,6 +98,8 @@ function saveSearch(cityName) {
 		searchHistory.appendChild(searchListEl);
 		cityNameSet.add(cityName);
 	}
+
+	searchListEl.addEventListener('click', getResults)
 }
 
 function removeChildren(obj) {
