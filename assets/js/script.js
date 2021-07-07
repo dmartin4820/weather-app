@@ -171,7 +171,24 @@ function displayResults(weatherData, cityName) {
 	var currentDataLength = weatherInfo.current.length;
 	for (var i = 0; i < currentDataLength - 1; i++) {
 		var listEl = document.createElement("li");
-		listEl.innerHTML = weatherInfo.current[i].name + ": " + weatherInfo.current[i].data + " " + weatherInfo.current[i].units;
+		if (weatherInfo.current[i].name === "UV Index") {
+			var spanEl = document.createElement("span");
+			var uvi = Number(weatherInfo.current[i].data);
+			spanEl.innerHTML = weatherInfo.current[i].data;
+			if (uvi > 0 && uvi < 3) {
+				spanEl.setAttribute("class", "uvIndex-favorable");
+			} else if (uvi >= 3 && uvi < 6) {
+				spanEl.setAttribute("class", "uvIndex-moderate");
+			} else {
+				spanEl.setAttribute("class", "uvIndex-severe");
+			}
+			listEl.innerHTML = weatherInfo.current[i].name + ": ";
+
+			listEl.appendChild(spanEl);
+		}
+		else {
+			listEl.innerHTML = weatherInfo.current[i].name + ": " + weatherInfo.current[i].data + " " + weatherInfo.current[i].units;
+		}
 		weatherInfoList.appendChild(listEl);
 	}
 

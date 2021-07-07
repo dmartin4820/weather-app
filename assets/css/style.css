@@ -97,7 +97,7 @@ body {
 }
 
 .current {
-	height: 40%;
+	height: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -130,8 +130,22 @@ body {
 
 .weather-container {
 	height: 100%;
-	border: 2px solid black;
-	border-radius: 10px;
+}
+
+li span {
+	border-radius: 5px;
+	padding: 2px;
+}
+.uvIndex-favorable {
+	background-color: green;
+}
+
+.uvIndex-moderate {
+	background-color: yellow;
+}
+
+.uvIndex-severe {
+	background-color: red;
 }
 
 .hide {
