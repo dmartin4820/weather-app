@@ -11,6 +11,31 @@ setInterval(function() {
 	localTime.add(1, 'seconds');
 }, 1000)
 
+function searchForCity() {
+	var searchBtn = document.getElementById("search-btn")
+	searchBtn.addEventListener('click', getResults);
+
+}
+
+function getResults(city) {
+	var searchInput = document.getElementById("search-input");
+	var cityName = searchInput.value.toLowerCase();
+	searchInput.value = "";
+	
+	if (city.target.getAttribute("id") !== "search-btn") {
+		cityName = city.target.getAttribute("id");
+	}
+	cityName = capitalizeWords(cityName);
+	var data = getLatLong(cityName)
+		.then(response => getApiResponse(response.lat, response.lon))
+		.then(function(response) {
+			if (response.cod !== "404") {
+				saveSearch(cityName);
+				displayResults(response, cityName);
+			}
+		})
+}
+
 async function getApiResponse(latitude, longitude) {
 	var fullUrl = baseURL + "onecall?lat=" + latitude + "&lon=" + longitude + "&exclude=hourly,minutely&appid=" + apiKey + "&units=imperial";
 
@@ -46,33 +71,6 @@ async function getLatLong(cityName) {
 	
 }
 
-
-function searchForCity() {
-	var searchBtn = document.getElementById("search-btn")
-	searchBtn.addEventListener('click', getResults);
-
-}
-
-function getResults(city) {
-	var searchInput = document.getElementById("search-input");
-	console.log(city.target)	
-	var cityName = searchInput.value.toLowerCase();
-	searchInput.value = "";
-	
-	if (city.target.getAttribute("id") !== "search-btn") {
-		cityName = city.target.getAttribute("id");
-	}
-	cityName = capitalizeWords(cityName);
-	var data = getLatLong(cityName)
-		.then(response => getApiResponse(response.lat, response.lon))
-		.then(function(response) {
-			if (response.cod !== "404") {
-				saveSearch(cityName);
-				displayResults(response, cityName);
-			}
-		})
-}
-
 function capitalizeWords(cityName) {
 	cityName = cityName.trim();
 
@@ -92,40 +90,33 @@ function saveSearch(cityName) {
 	var searchListEl = document.createElement('li');
 	searchListEl.setAttribute("id", cityName);
 
-	
-	if (!cityNameSet.has(cityName)) {
+	if (!JSON.parse(localStorage.getItem("city-names"))) {
+		localStorage.setItem("city-names", JSON.stringify([cityName]));
+		cityNameSet.add(cityName);
+		addSearchEl();
+	} else {
+		var cities = JSON.parse(localStorage.getItem("city-names"));
+		if (!cityNameSet.has(cityName)) {
+			cities.push(cityName);
+			cityNameSet.add(cityName);
+			addSearchEl();
+			localStorage.setItem("city-names", JSON.stringify(cities));
+		}
+
+	}
+	function addSearchEl() {
+		searchListEl.innerHTML = cityName;
+		searchHistory.appendChild(searchListEl);
+	}
+	/*if (!cityNameSet.has(cityName)) {
 		searchListEl.innerHTML = cityName;
 		searchHistory.appendChild(searchListEl);
 		cityNameSet.add(cityName);
-	}
+	}*/
 
 	searchListEl.addEventListener('click', getResults)
 }
 
-function removeChildren(obj) {
-	while (obj.firstChild) {
-		obj.removeChild(obj.firstChild);
-	}
-}
-
-function getDate(weatherDataUnix, weatherData, shortDate=true) {
-	//console.log(weatherData)
-	var searchTimezoneOffset = weatherData.timezone_offset;
-
-	var searchCurrentTime = moment.unix(weatherDataUnix - localOffsetToUTC + searchTimezoneOffset).utc();
-	if (!shortDate) {
-		var date = searchCurrentTime.format("dddd, MM[/]DD[/]YYYY");
-	} else {
-		var date = searchCurrentTime.format("MM[/]DD[/]YYYY");
-	}
-	return date;
-}
-
-function getWeatherIcon(weather) {
-	var iconUrl = "http://openweathermap.org/img/wn/" + weather.icon + "@2x.png"
-	var iconDescr = weather.description;
-	return [iconUrl, iconDescr];
-}
 
 function displayResults(weatherData, cityName) {
 	var weatherIconContainer = document.getElementsByClassName("weather-icon")[0];
@@ -247,6 +238,31 @@ function displayResults(weatherData, cityName) {
 		ul.appendChild(humEl);
 		dayEl.appendChild(ul);
 	}
+}
+
+function removeChildren(obj) {
+	while (obj.firstChild) {
+		obj.removeChild(obj.firstChild);
+	}
+}
+
+function getDate(weatherDataUnix, weatherData, shortDate=true) {
+	//console.log(weatherData)
+	var searchTimezoneOffset = weatherData.timezone_offset;
+
+	var searchCurrentTime = moment.unix(weatherDataUnix - localOffsetToUTC + searchTimezoneOffset).utc();
+	if (!shortDate) {
+		var date = searchCurrentTime.format("dddd, MM[/]DD[/]YYYY");
+	} else {
+		var date = searchCurrentTime.format("MM[/]DD[/]YYYY");
+	}
+	return date;
+}
+
+function getWeatherIcon(weather) {
+	var iconUrl = "http://openweathermap.org/img/wn/" + weather.icon + "@2x.png"
+	var iconDescr = weather.description;
+	return [iconUrl, iconDescr];
 }
 
 searchForCity();
