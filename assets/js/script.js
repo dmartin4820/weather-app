@@ -3,7 +3,7 @@ const apiKey = "d26f41c9506e070fd982c25246bad8b8";
 
 const localTime = moment.parseZone();
 const localOffsetToUTC = localTime.utcOffset() * 60; //Convert from minutes to seconds
-const cityNameSet = new Set();
+const cityNameSet = new Set(); //Create a set which keeps track of cities in the search history and local storage
 
 console.log(localOffsetToUTC)
 //._d.toUTCString();
@@ -11,6 +11,12 @@ setInterval(function() {
 	localTime.add(1, 'seconds');
 }, 1000)
 
+
+/* searchForCity initialized the page with search history and adds an event listener for when a user 
+ * submits a search.
+ * 	Inputs: N/A
+ * 	Ouputs: N/A
+ */
 function searchForCity() {
 	populateSearchHistory();
 	var searchBtn = document.getElementById("search-btn")
@@ -18,6 +24,10 @@ function searchForCity() {
 
 }
 
+/* populateSearchHistory populates the page with search history from localStorage.
+ *	Inputs: N/A
+ *	Ouputs: N/A
+ */
 function populateSearchHistory() {
 	var cities = JSON.parse(localStorage.getItem("city-names"));
 	
@@ -34,13 +44,21 @@ function populateSearchHistory() {
 	}
 }
 
-function getResults(city) {
+/* getResults takes the search input and calls the chose api to get weather data back. The function
+ * also checks whether the search is from the search input or from the user clicking on the previous
+ * search items. 
+ * 	Inputs: 
+ * 		event (object): event given from user interacting with the page elements
+ * 	Outputs:
+ * 		N/A
+ */ 
+function getResults(event) {
 	var searchInput = document.getElementById("search-input");
 	var cityName = searchInput.value.toLowerCase();
 	searchInput.value = "";
 	
-	if (city.target.getAttribute("id") !== "search-btn") {
-		cityName = city.target.getAttribute("id");
+	if (event.target.getAttribute("id") !== "search-btn") {
+		cityName = event.target.getAttribute("id");
 	}
 	cityName = capitalizeWords(cityName);
 	var data = getLatLong(cityName)
@@ -53,6 +71,13 @@ function getResults(city) {
 		})
 }
 
+/* getApiResponse creates the url for interacting with the api and getting weather data back.
+ * 	Inputs: 
+ * 		latitude (Number): geographic coordinate
+ * 	       longitude (Number): geographic coordinate
+ * 	Outputs:
+ * 		   data (promise): promise containing the weather data
+ */ 
 async function getApiResponse(latitude, longitude) {
 	var fullUrl = baseURL + "onecall?lat=" + latitude + "&lon=" + longitude + "&exclude=hourly,minutely&appid=" + apiKey + "&units=imperial";
 
@@ -72,6 +97,12 @@ async function getApiResponse(latitude, longitude) {
 	return data;
 }
 
+/* getLatLong retrieves the latitude and longitude given a city name to be used in getApiResponse
+ * 	Inputs: 
+ * 		cityName (String)
+ * 	Outputs:
+ * 		latLong (Object): Object containing latitude and longitude info.
+ */
 async function getLatLong(cityName) {
 	var fullUrl = baseURL + "forecast?q=" + cityName + "&appid=" + apiKey + "&cnt=1";
 
@@ -88,6 +119,16 @@ async function getLatLong(cityName) {
 	
 }
 
+/* Function to take input city name, separte it from the country, then capitalize each first letter in each word.
+ * The cityName that is returned is hard-coded to return a city name with US attached to it. This is so that the 
+ * results only work for US cities, but this can be made to search in other countries, possibly based around 
+ * a drop down menu.
+ * 	Inputs:
+ *		cityName (String)
+ *	Outputs:
+ *		cityName (String): The modified cityName is returned with each word in the city having the first letter 
+ *				capitalized and the city is attached to a default country, US.
+ */
 function capitalizeWords(cityName) {
 	cityName = cityName.trim();
 
@@ -98,10 +139,18 @@ function capitalizeWords(cityName) {
 		tempCityNameArr[i] = tempCityNameArr[i][0].toUpperCase() + tempCityNameArr[i].slice(1);
 	}
 
-	return tempCityNameArr.join(" ") + ", US" ;
+	cityName = tempCityNameArr.join(" ") + ", US";
+	return cityName;
 }
 
-
+/* Function that takes cityName and saves it to local storage and the globally defined set, cityNameSet. The
+ * displaying of the previous searches is also done here and the event listeners associated with those searches.
+ * The set makes sure that search history items are not duplicated.
+ * 	Inputs: 
+ * 		cityName (String)
+ * 	Outputs:
+ * 		N/A
+ */
 function saveSearch(cityName) {
 	var searchHistory = document.getElementById('search-history');
 	var searchListEl = document.createElement('li');
@@ -128,7 +177,17 @@ function saveSearch(cityName) {
 	searchListEl.addEventListener('click', getResults)
 }
 
-
+/* displayResults does the bulk of the work for getting the current weather and future weather and placing that
+ * content on the page. This function is called when previous searches are called, so it first removes any 
+ * previously displayed content. The weather data from the api is taken in and the relevant information is 
+ * extracted into an object called weatherInfo. The content is placed on the page by going through this 
+ * weatherInfo container.
+ * 	Inputs: 
+ * 		weatherData (Object) 
+ * 		cityName (String)
+ * 	Outputs:
+ * 		N/A
+ */
 function displayResults(weatherData, cityName) {
 	var weatherIconContainer = document.getElementsByClassName("weather-icon")[0];
 	var weatherInfoList = document.getElementsByClassName("weather-info")[0].firstChild;
@@ -144,9 +203,10 @@ function displayResults(weatherData, cityName) {
 	cityNameEl.innerHTML = cityName;
 	//Fill date
 	var dateEl = document.createElement("h2");
+	dateEl.setAttribute("id", "date");
 	var breakEl = document.createElement("br");
 
-	dateEl.innerHTML = date;
+	dateEl.innerHTML = date.format("dddd, MM[/]DD[/]YYYY, h:mm a");
 
 	weatherIconContainer.appendChild(cityNameEl);
 	weatherIconContainer.appendChild(breakEl);
@@ -218,7 +278,7 @@ function displayResults(weatherData, cityName) {
 		removeChildren(dayEl);
 
 		var date = getDate(weatherInfo.fiveDay[i][4].data, weatherData, true);
-		dateHeaderEl.innerHTML = date;
+		dateHeaderEl.innerHTML = date.format("MM[/]DD[/]YYYY");
 		dayEl.appendChild(dateHeaderEl);
 
 		var iconData = getWeatherIcon(weatherInfo.fiveDay[i][5].data);
@@ -251,25 +311,41 @@ function displayResults(weatherData, cityName) {
 	}
 }
 
+/* function for removing children of a node
+ * 	Inputs:
+ *		obj (Object)
+ *	Outputs:
+ *		N/A
+ */
 function removeChildren(obj) {
 	while (obj.firstChild) {
 		obj.removeChild(obj.firstChild);
 	}
 }
 
-function getDate(weatherDataUnix, weatherData, shortDate=true) {
+/*Function that uses moment.js to get the current time at the searched location, properly accounting for
+ * the offset in timezone uses moment.js.
+ * 	Inputs:
+ * 		weatherDataUnix (Number): Unix timestamp in local time
+ * 		weatherData (Object)
+ * 	Outputs:
+ * 		date (moment Object): Moment object with the properly shifted time
+ */
+function getDate(weatherDataUnix, weatherData) {
 	//console.log(weatherData)
 	var searchTimezoneOffset = weatherData.timezone_offset;
 
 	var searchCurrentTime = moment.unix(weatherDataUnix + searchTimezoneOffset).utc();
-	if (!shortDate) {
-		var date = searchCurrentTime.format("dddd, MM[/]DD[/]YYYY, h:mm a");
-	} else {
-		var date = searchCurrentTime.format("MM[/]DD[/]YYYY");
-	}
+	var date = searchCurrentTime//.format("dddd, MM[/]DD[/]YYYY, h:mm a");
 	return date;
 }
 
+/* Function that creates the url from the code given in the api response data
+ * 	Inputs:
+ *		weather (Object): weather is the container for the description of the weather
+ *	Outputs:
+ *		(Array): Array containing URL to retrive icon and the icon description.
+ */
 function getWeatherIcon(weather) {
 	var iconUrl = "http://openweathermap.org/img/wn/" + weather.icon + "@2x.png"
 	var iconDescr = weather.description;
