@@ -3,6 +3,7 @@ const apiKey = "d26f41c9506e070fd982c25246bad8b8";
 
 const localTime = moment.parseZone();
 const localOffsetToUTC = localTime.utcOffset() * 60; //Convert from minutes to seconds
+const cityNameSet = new Set();
 
 console.log(localOffsetToUTC)
 //._d.toUTCString();
@@ -51,7 +52,8 @@ function searchForCity() {
 	var searchBtn = document.getElementById("search-btn");
 
 	searchBtn.addEventListener('click', function() {
-		var cityName = searchInput.value;
+		var cityName = searchInput.value.toLowerCase();
+		cityName = capitalizeWords(cityName);
 		saveSearch(cityName);
 		var data = getLatLong(cityName)
 			.then(response => getApiResponse(response.lat, response.lon))
@@ -62,9 +64,16 @@ function searchForCity() {
 }
 
 function capitalizeWords(cityName) {
+	cityName = cityName.trim();
+
 	var temp = cityName.split(',');
 	var tempCityNameArr = temp[0].split(" ");
 
+	for (var i = 0; i < tempCityNameArr.length; i++) {
+		tempCityNameArr[i] = tempCityNameArr[i][0].toUpperCase() + tempCityNameArr[i].slice(1);
+	}
+
+	return tempCityNameArr.join(" ");
 }
 
 
@@ -72,9 +81,12 @@ function saveSearch(cityName) {
 	var searchHistory = document.getElementById('search-history');
 	var searchListEl = document.createElement('li');
 
-	searchListEl.innerHTML = cityName;
-
-	searchHistory.appendChild(searchListEl);
+	
+	if (!cityNameSet.has(cityName)) {
+		searchListEl.innerHTML = cityName;
+		searchHistory.appendChild(searchListEl);
+		cityNameSet.add(cityName);
+	}
 }
 
 function removeChildren(obj) {
@@ -93,9 +105,7 @@ function getDate(weatherDataUnix, weatherData, shortDate=true) {
 	} else {
 		var date = searchCurrentTime.format("MM[/]DD[/]YYYY");
 	}
-
 	return date;
-
 }
 
 function getWeatherIcon(weather) {
@@ -112,6 +122,7 @@ function displayResults(weatherData, cityName) {
 	//Clear previous
 	removeChildren(weatherIconContainer);
 	removeChildren(weatherInfoList);
+
 
 	//Fill city
 	var cityNameEl = document.createElement("h2");
@@ -172,7 +183,8 @@ function displayResults(weatherData, cityName) {
 		var iconEl = document.createElement("img");
 		var ul = document.createElement("ul");
 
-		
+		removeChildren(dayEl);
+
 		var date = getDate(weatherInfo.fiveDay[i][4].data, weatherData, true);
 		dateHeaderEl.innerHTML = date;
 		dayEl.appendChild(dateHeaderEl);
@@ -204,11 +216,7 @@ function displayResults(weatherData, cityName) {
 
 		ul.appendChild(humEl);
 		dayEl.appendChild(ul);
-
 	}
-
 }
-
-//temperature, humidity, windspeed, and uvi
 
 searchForCity();

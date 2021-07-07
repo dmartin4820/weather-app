@@ -18,11 +18,10 @@ header {
 	justify-content: center;
 	background-color: var(--blue);
 	margin-bottom: 25px;
-
 }
 
 .header-container {
-	font-size: 36px;
+	font-size: 48px;
 	color: white;
 	font-weight: bold;
 	text-shadow: 2px 4px black;
@@ -79,6 +78,11 @@ body {
 }
 
 
+.main {
+	display: flex;
+	justify-content: space-evenly;
+
+}
 .row { 
 	height: 100%;
 	margin: 0;
@@ -110,6 +114,7 @@ body {
 	height: 30%;
 	width: 50%;
 	margin-bottom: 10px;
+	flex: 1 1 auto;
 }
 
 .weather-icon > * {
@@ -124,7 +129,9 @@ body {
 }
 
 .weather-container {
-	height: 90%;
+	height: 100%;
+	border: 2px solid black;
+	border-radius: 10px;
 }
 
 .hide {
