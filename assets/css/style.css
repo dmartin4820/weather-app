@@ -102,6 +102,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	flex-direction: column;	
+	padding: 5px;
 }
 
 .current-weather-container {
@@ -158,6 +159,7 @@ li span {
 	justify-content: space-between;
 	align-items: flex-start;
 	margin: 0;
+	flex-wrap: wrap;
 }
 
 .col-md-6.five-day-box {

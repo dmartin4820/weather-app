@@ -53,12 +53,16 @@ function searchForCity() {
 
 	searchBtn.addEventListener('click', function() {
 		var cityName = searchInput.value.toLowerCase();
+		searchInput.value = "";
 		cityName = capitalizeWords(cityName);
-		saveSearch(cityName);
 		var data = getLatLong(cityName)
 			.then(response => getApiResponse(response.lat, response.lon))
-			.then(response => displayResults(response, cityName));
-		
+			.then(function(response) {
+				if (response.cod !== "404") {
+					saveSearch(cityName);
+					displayResults(response, cityName);
+				}
+			})
 	});
 
 }
